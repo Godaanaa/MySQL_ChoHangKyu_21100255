@@ -1,0 +1,142 @@
+Q1. 2
+Q2. 4
+Q3. 3
+Q4. 1
+Q5. 1
+Q6. 1
+Q7. 3
+Q8. 3
+Q9. 4
+Q10. 4
+Q11. 
+ (1) 후보키가 아니다. 불필요한 속성을 포함하지 않는 최소한의 속성을 가져야하기 떄문이다.
+ (2) 슈퍼키가 맞다. 대체키이기 때문이다.
+ (3) NULL값을 가질 수 없다. 기본키 중 하나이기 때문이다.
+ (4) NULL값을 가질 수 있다.
+ 
+Q12. 
+ (1) R: A, S: (C,D), (C,E)
+ (2) R의 기본키 (A), S의 기본키 (C,D)
+ 
+Q13.
+ (1) a2인 튜플 반환
+ (2) A,B 속성 가진 것만 반환
+ (3) a2 b1
+ (4) 다 곱한 결과 반환
+ (5) (a1, b1, c1, c1, d2, e1), (a1, b1, c1, c1, d1, e2), (a2, b1, c1, c1, d2, e1), (a2, b1, c1, c1, d1, e2), (a3, b1, c2, c2, d3, e3)
+ (6) 'Left Outer Join' (a1, b1, c1, c1, d2, e1), (a1, b1, c1, c1, d1, e2), (a2, b1, c1, c1, d2, e1), (a2, b1, c1, c1, d1, e2), (a3, b1, c2, c2, d3, e3), (a4, b2, c4, NULL, NULL, NULL)
+ (7) 'Right Outer Join' (a1, b1, c1, c1, d2, e1), (a2, b1, c1, c1, d2, e1), (a1, b1, c1, c1, d1, e2), (a2, b1, c1, c1, d1, e2), (a3, b1, c2, c2, d3, e3), (NULL, NULL, NULL, c5, d3, e3)
+ (8) 'Full Outer Join' (a1, b1, c1, c1, d2, e1), (a1, b1, c1, c1, d1, e2), (a2, b1, c1, c1, d2, e1), (a2, b1, c1, c1, d1, e2), (a3, b1, c2, c2, d3, e3), (a4, b2, c4, NULL, NULL, NULL), (NULL, NULL, NULL, c5, d3, e3)
+ (9) (c1, c2, c4, c5)
+ (10) (c1, c2)
+ 
+Q14.
+ (1)
+  name
+  -----
+  Victor
+  Jane
+ (2)
+  id   name   age  gender  jobid  cityid
+  --------------------------------------
+  3    Victor  31   Male    2      4
+  4    Jane    27   Female  1      2
+ (3)
+  id   name   age  gender  jobid  cityid  jobid  jobname
+  ------------------------------------------------------
+  1    John   25   Male    1      2      1      Engineer
+  2    Sara   20   Female  3      3      3      Developer
+  3    Victor 31   Male    2      4      2      Programmer
+  4    Jane   27   Female  1      2      1      Engineer
+ (4) Customer, Job, City의 모든 조합을 생성하는 카티션 곱으로, Customer(4개 행) × Job(4개 행) × City(4개 행) = 64개의 행이 생성된다.
+ (5) 모든 name, age 튜플을 반환한다.
+ 
+Q15.
+ (1) 최소 개수: 0 // 최대 개수: ∣R∣×∣S∣
+ (2) 최소 개수: 0 // 최대 개수: ∣R∣×∣R∣
+ (3) 최소 개수: 0 // 최대 개수: ∣R∣×∣S∣
+ (4) 최소 개수: max⁡(∣πB(R)∣,∣πB(S)∣)max(∣πB​(R)∣,∣πB​(S)∣) // 최대 개수: ∣πB(R)∣+∣πB(S)∣∣πB(R)∣+∣πB(S)∣
+ (5) 최소 개수: 0 // 최대 개수: min⁡(∣πB(R)∣,∣πB(S)∣)min(∣πB​(R)∣,∣πB​(S)∣)
+Q16.
+ (1) π학번(σ 과목코드=1234∧성적='A'(수강))
+ (2) π이름,전공(σ과목코드=1234(수강)⋈학생)
+ (3) π이름(학생)−π이름(σ과목코드=1234(수강)⋈학생)
+ (4) π이름(σ 과목코드∈(π과목코드(과목))(수강)⋈학생)
+ 
+Q17.
+ (1) 상영관 : 극장번호 // 예약 : 극장번호, 상영관번호, 고객번호
+ (2) 극장, 상영장, 예약, 고객 테이블 순
+ 
+  극장번호  	  극장이름  	  위치
+  --------------------------
+  1	          대한	      강남
+  2	          셋터	      잠실
+  3         	메가	      홍대
+  4	          롯데	      명동
+
+
+  극장번호    	상영관번호    	영화제목    	가격    	좌석수
+  -----------------------------------------------
+  1	          1	            아바타      	12000	    150
+  1	          2	            토이스토리	  10000     120
+  2	          1	            스파이더맨  	11000	    200
+  3	          1	            겨울왕국	    9000	    180
+
+  
+  국장번호    	상영관번호    	고객번호    	좌석번호    	날짜
+  -----------------------------------------------
+  1	          1	            101	        A12	        2023-05-10
+  1	          2	            102	        B05        	2023-05-11
+  2	          1	            103	        C10        	2023-05-12
+  3	          1	            101	        D08        	2023-05-13
+
+
+  고객번호    	이름    	주소
+  -----------------------------------------------
+  101	        김철수	    서울시 강남구
+  102	        이영희	    서울시 서초구
+  103	        박민수    	서울시 송파구
+  104	        정수민	    서울시 마포구
+
+ (3)
+  ① 가격이 6000원을 초과하는 상영관이 있는 극장번호 목록.
+  ② 극장과 상영관 정보를 조인한 결과.
+  ③ 가격이 6000원을 초과하는 상영관이 있는 극장의 이름 목록.
+  ④ 2024년 1월 1일 이후 예약한 고객의 전체 정보.
+  ⑤ 강남에 위치한 모든 극장에 예약한 고객의 이름.
+ (4)
+  ① π극장이름, 위치 (극장)
+  ② π영화제목 (σ가격 ≤ 7000 (상영관))
+  ③ π이름, 주소 (고객)
+  ④ π영화제목 (σ위치 = '강남' (극장) ⋈ 상영관)
+  ⑤ π이름 ((σ위치 = '강남' (극장) ⋈ 예약) ⋈ 고객)
+  
+Q18.
+ (1) πname (Salesperson)
+ (2) πsalesperson (σcustomer='홍길동' (Order))
+ (3) πname (Salesperson ⋈ Order)
+ (4) πname (Salesperson) - πsalesperson (Order)
+ (5) πage (Salesperson ⋈ σcustomer='홍길동' (Order))
+ (6) πcity (Customer ⋈ (Order ⋈ σage=25 (Salesperson)))
+ (7) πname, customer (Salesperson ⟕ Order)
+ 
+Q19.
+ (1) Employee : empno / Department : deptno / Project : projno / Works : (empno, projno)
+ (2) Employee : deptno / Department : manager / Project : deptno / Works : empno, projno
+ (3)
+  ① πname (Employee)
+  ② πname (σsex='여' (Employee))
+  ③ πname, address (Employee ⋈ Department.manager=Employee.empno Department)
+  ④ πname, address (σdeptname='IT' (Department) ⋈ Employee)
+  ⑤ πname (Employee ⋈ (Works ⋈ σprojname='미래' (Project)))
+  
+Q20.
+ (1) πfid, fdate, time, src, dest (σdest='제주' (Flight))
+ (2) πfid, fdate, time, src, dest (σsrc='김포' ∧ dest='제주' (Flight))
+ (3) πfid (σpid=100 ∧ fdate>'01/01/2024' (Booking))
+ (4) πpname (Passenger ⋈ πpid (Booking))
+ (5) πpname (Passenger) - πpname (Passenger ⋈ Booking)
+ (6) πaname (σacity=(πpcity (σpid=100 (Passenger)) (Agency))
+ (7) σfdate≥'01/01/2024' ∧ fdate≤'01/30/2024' ∧ time>'16:00' (Flight)
+ (8) πaname (Agency) - πaname (σpid=100 (Booking) ⋈ Agency)
+ (9) πPassenger.* (σpgender='남' (Passenger) ⋈ (Booking ⋈ σaname='마당여행사' (Agency)))
