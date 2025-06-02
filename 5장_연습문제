@@ -145,5 +145,3 @@ select name, Domestic(address) as address from customer;
  (3) 
 select (select sum(o.salePrice) from customer c join orders o on o.custid = c.custid where Domestic(c.address) = '국내거주') as 국내거주총합,
        (select sum(o.salePrice) from customer c join orders o on o.custid = c.custid where Domestic(c.address) = '국외거주') as 국외거주총합;
-
-Q9.
