@@ -1,0 +1,218 @@
+Q1.
+ABS(-15) : 15  
+CEIL(15.7) : 16  
+COS(3.14159) : -1  
+FLOOR(15.7) : 15  
+LOG(10,100) : 2  
+MOD(11,4) : 3  
+POWER(3,2) : 9  
+ROUND(15.7) : 16  
+SIGN(-15) : -1  
+TRUNCATE(15.7, 0) : 15  
+CHAR(67 USING utf8) : C  
+CONCAT('HAPPY','Birthday') : HAPPYBirthday  
+LOWER('Birthday') : birthday  
+LPAD('Page 1',15,'*.') : *.*.*.*.*Page 1  
+REPLACE('JACK','J','BL') : BLACK  
+RPAD('Page 1',15,'*') : Page 1*********  
+SUBSTR('ABCDEFG',3,4) : CDEF  
+TRIM(LEADING 0 FROM '00AA00') : AA00  
+UPPER('Birthday') : BIRTHDAY  
+ASCII('A') : 65  
+LENGTH('Birthday') : 8  
+ADDDATE('2024-02-14', INTERVAL 10 DAY ) : 2024-02-24  
+LAST_DAY(SYSDATE()) : 2024-10-31  
+NOW(): 2024-10-21 18:14:07  
+DATE_FORMAT(SYSDATE(), '%Y'): 2024  
+CONCAT(123): 123  
+CAST('12.3' AS DECIMAL(3,1)): 12.3  
+IF(1=1, 'aa', 'bb'): aa  
+IFNULL(123, 345): 123  
+IFNULL(NULL, 123): 123  
+
+Q.2
+ (1) 
+| bookid | price  |
+|--------|--------|
+|   1    | 10000  |
+|   2    | 20000  |
+|   3    |  null  |
+ (2) 
+| bookid | IFNULL(price, 0) |
+|--------|------------------|
+|   1    |      10000       |
+|   2    |      20000       |
+|   3    |        0         |
+ (3) 
+| bookid | price |
+|--------|-------|
+|   3    | null  |
+ (4) 
+| bookid | price |
+|--------|-------|
+|        |       |
+ (5) 
+| bookid | price+100 |
+|--------|-----------|
+|   1    |   10100   |
+|   2    |   20100   |
+|   3    |   null    |
+ (6) 
+| sum(price) | avg(price) | count(*) |
+|------------|------------|----------|
+|   null     |   null     |    0     |
+ (7) 
+| count(*) | count(price) |
+|----------|--------------|
+|    3     |      2       |
+ (8) 
+| sum(price) | avg(price) |
+|------------|------------|
+|   30000    | 15000.0000 |
+
+Q3.
+ (1) 
+| count(a) |
+|----------|
+|    2     |
+ (2) 
+| A  |   B   |
+|----|-------|
+| 12 | null  |
+| 10 |  12   |
+ (3) 
+|   A   | count(*) |
+|-------|----------|
+| null  |    2     |
+|  12   |    1     |
+|  10   |    1     |
+
+Q5.
+ (1) 각 custid에 대한 custid, address, saleprice의 합산이다.
+ (2) 각 custid에 대해 이름과, 판매가의 평균 출력
+ (3) custid가 3이하이고, 주문한 고객중에 판매가 합산
+
+ Q6. 4
+ Q7. 
+ (1) SELECT DISTINCT(name) FROM Customer WHERE address LIKE '%대한민국%' AND custid NOT IN (SELECT custId FROM orders);
+ (2) SELECT name FROM Customer c WHERE NOT EXISTS (SELECT * FROM orders o WHERE o.custId = c.custId) AND address LIKE '%대한민국%';
+ (3) SELECT DISTINCT(c1.name) FROM Customer c1 JOIN Customer c2 ON c1.custId = c2.custId WHERE c1.address LIKE '%대한민국%' AND c2.custId NOT IN (SELECT custid FROM orders);
+
+ Q8.
+| 회원번호 | 등급 |
+|----------|------|
+|    1     |  1   |
+|    2     |  2   |
+
+Q9. 2 → 3 → 4 → 5 → 1 → 6
+
+Q10. 
+ - 뷰는 복잡한 쿼리를 단순화하여 재사용할 수 있는 구조를 제공한다.
+ - 뷰를 사용하면 원본 테이블의 일부 정보만 사용자에게 제공하여 보안을 강화할 수 있다.
+ - 뷰는 테이블 구조 변경 시에도 사용자 쿼리의 영향을 최소화할 수 있는 논리적 독립성을 제공한다.
+
+ Q11.
+| 합계 |
+|------|
+| 5000 |
+
+Q12.
+ (1) CREATE VIEW highorders AS SELECT B.bookid, B.bookname, C.name AS customername, B.publisher, O.saleprice FROM Book B JOIN Orders O ON B.bookid = O.bookid JOIN Customer C ON O.custid = C.custid WHERE O.saleprice >= 20000;
+ (2) SELECT bookname, customername FROM highorders;
+ (3) DROP VIEW highorders; CREATE VIEW highorders AS SELECT B.bookid, B.bookname, C.name AS customername, B.publisher FROM Book B JOIN Orders O ON B.bookid = O.bookid JOIN Customer C ON O.custid = C.custid WHERE O.saleprice >= 20000;
+
+Q13.
+ (1) select ename from emp where mgr is null;
+ (2) select ename, dname from Dept, Emp where dept.deptno = emp.empno select ename, (select dname from dept where Emp.deptno = dept.deptno) as dname from Emp
+ (3) 
+ - select ename from Emp e, Dept d where e.deptno = d.deptno and d.loc like '%CHICAGO';
+ - select e1.empno from (select ename from Emp e, dept d where e.deptno = d.deptno and d.loc like '%CHICAGO') e1;
+ - select ename from emp e where exists (select * from dept d where d.deptno = e.deptno and d.loc Like '%CHICAGO%');
+ (4) select ename from emp e1 where sal > (select avg(sal) from emp);
+ (5) select ename from emp e1 where sal > (select avg(sal) from emp e2 where deptno = (select deptno from dept where ename = e1.ename));
+
+ Q14. 
+ (1) 
+CREATE VIEW 극장_고객 AS
+SELECT 극장.극장이름, 고객.이름
+FROM 극장
+JOIN 상영관 ON 극장.극장번호 = 상영관.극장번호
+JOIN 예약 ON 예약.극장번호 = 상영관.극장번호 AND 예약.상영관번호 = 상영관.상영관번호
+JOIN 고객 ON 고객.고객번호 = 예약.고객번호
+ (2) 
+CREATE VIEW 대한_고객수 AS
+SELECT 예약.날짜, COUNT(예약.고객번호) AS 고객수
+FROM 예약
+JOIN 극장 ON 예약.극장번호 = 극장.극장번호
+WHERE 극장.극장이름 = '대한'
+GROUP BY 예약.날짜;
+
+Q15.
+ (1) 각 극장 이름과 극장에서 총 예약 수
+ (2) 극장이름이 강남인 총 예약 수
+ (3) 최소 예약 수
+ (4) 극장 총 수
+ (5) 예약수가 100 초과인 극장이름
+ (6) 예약수의 따라, 각 극장의 이름을 오름차순으로 출력
+
+ Q16. 
+ (1) 부서에 있고, JOB이 ‘SALESMAN’인 테이블 생성, 3개 임의로 출력
+ (2) sal이 1500이상인 (1)번 출력을 만족하는 직원 출력
+
+ Q17. 
+ - 시크 타임 : 하드디스크의 읽기/쓰기 헤드가 원하는 데이터가 저장된 디스크의 트랙(원반의 특정 원주)으로 이동하는 데 걸리는 시간
+ - 회전 지연 : 디스크가 회전하여 원하는 데이터가 헤드 아래에 위치하게 되기까지의 시간
+ - 데이터 전송 시간 : 실제 데이터가 디스크에서 컴퓨터의 RAM으로 이동하는 데 걸리는 시간
+
+ Q18.
+(1) 비어 있는 트리에 처음으로 1을 삽입함
+[1]
+
+(2) 1 다음에 2를 삽입함
+[1, 2]
+
+(3) 노드가 차수를 초과하여 3을 삽입하면 분할이 발생함
+   [2]
+  /   \\
+[1]   [3]
+
+(4) 3의 오른쪽에 4를 삽입함
+   [2]
+  /   \\
+[1]   [3, 4]
+
+(5) 3과 4 사이에 5를 삽입하면 분할이 다시 발생함
+   [2]
+  /   \\
+[1]   [3, 4]
+
+(6) 5의 오른쪽에 6을 삽입함
+   [2, 4]
+  /   |   \\
+[1]  [3]  [5, 6]
+
+(7) 5와 6 사이에 7을 삽입하면 분할이 발생함
+    [2, 4, 6]
+  /   |   |   \\
+[1]  [3] [5]  [7]
+
+(8) 7의 오른쪽에 8을 삽입함
+    [2, 4, 6]
+  /   |   |   \\
+[1]  [3] [5]  [7, 8]
+
+(9) 7과 8 사이에 9를 삽입하면 분할이 발생함
+      [4]
+     /   \\
+  [2]     [6]
+ /   \\   /   \\
+[1] [3] [5] [7, 8, 9]
+
+이 때 분할로 인해 7, 8, 9 중 가운데 값인 8이 상위 노드로 이동하고, 노드가 재배열됨
+     [4]
+    /   |   \\
+  [2]  [6]  [6,8]
+ /   \\   |   | |
+[1] [3] [5] [7] [9]
+
+이 과정을 통해 B-tree는 항상 균형을 유지한다. 노드가 차수를 초과할 때마다 분할을 통해 트리의 균형을 맞추고, 모든 노드가 정렬된 상태를 유지한다.
