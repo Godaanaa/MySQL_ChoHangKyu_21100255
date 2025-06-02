@@ -1,0 +1,149 @@
+Q1. 1
+Q2. 1
+Q3. 1
+Q4. 1
+Q5. 3
+Q6. 
+ (1) 
+DELIMITER //
+CREATE PROCEDURE InsertCustomer (
+    IN custid VARCHAR(10),
+    IN name VARCHAR(10),
+    IN address VARCHAR(20),
+    In phone VARCHAR(10)
+)
+BEGIN
+    INSERT INTO Customer (custid, name, address, phone)
+    VALUES (custid, name, address, phone);
+END //
+DELIMITER ;
+ (2) 
+delimiter //
+CREATE PROCEDURE BookInsertOrUpdate(mybookid INTEGER, mybookname VARCHAR(20), mypublisher VARCHAR(20), myprice INT)
+BEGIN
+    DECLARE mycount INTEGER;
+    DECLARE current_price INTEGER;
+
+    select count(*) INTO mycount from BOOK
+        where bookid = mybookid;
+
+    IF mycount!=0 THEN
+        SET SQL_SAFE_UPDATES=0;
+        SELECT price INTO current_price from BOOK where bookId = mybookid;
+
+        IF myprice > current_price THEN
+		    update book set price = myprice
+	        where bookId = mybookid;
+	    END IF;
+    else
+        insert into BOOK(bookId, bookname, publisher, price)
+            values(mybookid, mybookname, mypublisher, myprice);
+    end if;
+end;
+//
+delimiter;
+
+Q7.
+ (1) 
+DELIMITER //
+
+CREATE PROCEDURE GetBooksByPublisher(IN publisher_name VARCHAR(255))
+BEGIN
+    SELECT bookname, price
+    FROM book
+    WHERE publisher = '이상미디어';
+END //
+
+DELIMITER ;
+ (2) 
+DELIMITER //
+
+CREATE PROCEDURE GetTotalSalesByPublisher()
+BEGIN
+    SELECT b.publisher, SUM(o.saleprice) AS total_sales_amount
+    FROM book b
+    JOIN orders o ON b.bookid = o.bookid
+    GROUP BY b.publisher;
+END //
+
+DELIMITER ;
+ (3) 
+CREATE PROCEDURE getHigher2()
+BEGIN
+    SELECT B1.bookname from Orders O
+        join BOOK B1 on O.bookId = B1.bookId
+    where O.salePrice >= (select avg(salePrice) from Orders O2 join BOOK B on O2.bookId = B.bookId where B.publisher = B1.publisher);
+END //
+
+DELIMITER ;
+ (4) 
+DELIMITER //
+
+CREATE PROCEDURE getAVG()
+BEGIN
+    SELECT custid, count(*) from Orders group by custId;
+END //
+
+DELIMITER ;
+ (5) 
+DELIMITER //
+
+CREATE PROCEDURE GetCustomerOrders()
+BEGIN
+    SELECT c.name, SUM(o.saleprice) AS total_order_amount
+    FROM customer c
+    LEFT JOIN orders o ON c.custid = o.custid
+    GROUP BY c.name
+    HAVING total_order_amount IS NOT NULL
+    UNION ALL
+    SELECT c.name, NULL AS total_order_amount
+    FROM customer c
+    LEFT JOIN orders o ON c.custid = o.custid
+    WHERE o.custid IS NULL;
+END //
+
+DELIMITER ;
+
+Q8.
+ (1) 
+CREATE Function Grade(IN customer_id INT, OUT customer_grade VARCHAR(10))
+BEGIN
+    DECLARE total_amount INTEGER;
+
+    -- 고객의 주문 총액 계산
+    SELECT SUM(salePrice) INTO total_amount
+    FROM orders
+    WHERE orders.custId = customer_id;
+
+    -- 고객 등급 계산
+    IF total_amount >= 20000 THEN
+        SET customer_grade = '우수';
+    ELSE
+        SET customer_grade = '보통';
+    END IF;
+END //
+DELIMITER ;
+
+SELECT c.name, Grade(o.custId) AS customer_grade
+FROM customer c
+JOIN orders o ON c.custId = o.custId
+group by c.name, Grade(o.custId);
+ (2) 
+CREATE FUNCTION Domestic(address VARCHAR(20)) returns VARCHAR(10)
+BEGIN
+
+    IF address LIKE '%대한민국%' THEN
+        return '국내거주';
+    ELSE
+        return '국외거주';
+    END IF;
+END //
+
+DELIMITER ;
+
+select name, Domestic(address) as address from customer;
+ (3) 
+select (select sum(o.salePrice) from customer c join orders o on o.custid = c.custid where Domestic(c.address) = '국내거주') as 국내거주총합,
+       (select sum(o.salePrice) from customer c join orders o on o.custid = c.custid where Domestic(c.address) = '국외거주') as 국외거주총합;
+
+Q9.
