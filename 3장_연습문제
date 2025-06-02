@@ -1,1 +1,298 @@
-Q1-. 
+Q1.
+ (1) select bookname from book where bookid = 2;
+ (2) select bookname from book bk, orders od where bk.bookid = od.bookid and saleprice >= 20000;
+ (3) select sum(saleprice) as 총구매액 from customer cs, orders od where cs.custid = od.custid and cs.name = '박지성';
+ (4) select count(*) as 구매도서수 from customer cs, orders od where cs.custid = od.custid and cs.name = '박지성';
+ (5) select count(*) as 출판사수 from orders od, customer cs, book bk where od.custid = cs.custid and od. custid = bk.bookid and cs.name = '박지성' group by bk.publisher;
+ (6) select bookname, price, abs(price - saleprice) as '정가와 판매가격 차이' from book bk, customer cs, orders od where od.custid = cs.custid and od.bookid = bk.bookid and name = '박지성';
+ (7) select bookname from orders od, book bk , customer cs where od.bookid = bk.bookid and od.custid = cs.custid and name != '박지성';
+
+Q2.
+ (1) select count(*) '책 총 개수' from book;
+ (2) select count(distinct publisher) from book;
+ (3) select name, address from customer;
+ (4) select orderid from orders where orderdate between '20240704' and '20240707';
+ (5) select orderid from orders where orderdate not between '20240704' and '20240707';
+ (6) select name, address from customer where name like '김%';
+ (7) select name, address from customer where name like '김%아';
+ (8) select name from customer where custid not in(select custid from orders);
+ (9) select sum(saleprice) as 총액, avg(saleprice) as 평균금액 from orders;
+ (10) select name, sum(saleprice) from orders od, customer cs where od.custid = cs.custid group by cs.custid;
+ (11) select name, bookname from orders od, customer cs, book bk where od.custid = cs.custid and od.bookid = bk.bookid order by name;
+ (12) select orderid, bookname from book bk, orders od where bk.bookid = od.bookid and abs(price - saleprice) = (select max(abs(price - saleprice)) from book bk, orders od where bk.bookid = od.bookid);
+ (13) select name, avg(a.saleprice) as 전체평균, avg(u.saleprice) as 고객평균 from customer cs, orders a, orders u where cs.custid = u.custid group by name having avg(a.saleprice) < avg(u.saleprice);
+
+Q3.
+ (1) select name from book bk, orders od, customer cs where od.bookid = bk.bookid and od.custid = cs.custid and publisher in (select publisher from book bk, orders od, customer cs where od.bookid = bk.bookid and od.custid = cs.custid and name = '박지성')	and name != '박지성';
+ (2) select name from customer cs, book bk, orders od where cs.custid = od.custid  and bk.bookid = od.bookid group by name having count(distinct publisher) >= 2;
+ (3) select bookname from book where bookid in (select bookid	from orders group by bookid having(count(distinct custid) / (select count(*) from customer)) > 0.3);
+
+Q4.
+ (1) bookid가 빠졌기 때문에 설정해줘야 한다. bookid는 primary key 이므로, NULL 값이 허용되지 않는다. // insert into book(bookid, bookname, publisher, price) values(11, '스포츠세계', '대한미디어', 10000);
+ (2) delete from book where publisher = '삼성당';
+ (3) delete from book where publisher = '이상미디어'; // 삭제가 되지 않는다. 그 이유는, orders table에서 bookid를 외래키로 참조하고 있기 때문이다. 위에서 '삼성당'이 삭제가 가능했던 이유는, 해당 책을 구매한 이력 자체가 orders 테이블에 존재하지 않았기 때문이다.
+ (4) update book set publisher = '대한출판사' where publisher = '대한미디어';
+ (5) create table bookcompany(name VARCHAR(20) primary key, address	VARCHAR(20), begin	DATE);
+ (6) alter table bookcompany add webaddress varchar(30);
+ (7) insert into bookcompany values('한빛아카데미', '서울시 마포구', '19930101', 'http://hanbit.co.kr');
+
+Q5. 
+ (1) 주문 내역이 없는 고객의 정보가 나온다.
+ (2) 반대로 주문 내역이 있는 고객의 정보가 나온다.
+
+Q6.
+ - DML : SELECT, INSERT, DELETE, UPDATE
+ - DDL : CREATE, ALTER, DROP
+ - DCL : GRANT, REVOKE
+
+Q7. 
+ (1) select * from R where A = a2
+ (2) select A, B from R
+ (3) select * from R, S where R.c = S.c
+
+Q8.
+ (1) 
+|   A   |  B  | R.C | S.C |  D  |  E  |
+|-------|-----|-----|-----|-----|-----|
+|  a2   | b1  | c1  | c1  | d2  | e1  |
+|  a1   | b1  | c1  | c1  | d2  | e1  |
+|  a2   | b1  | c1  | c1  | d1  | e2  |
+|  a1   | b1  | c1  | c1  | d1  | e2  |
+|  a3   | b1  | c2  | c2  | d3  | e3  |
+ (2)
+|  A  |  B  | R.C | S.C |  D  |  E   |
+|-----|-----|-----|-----|-----|------|
+| a1  | b1  | c1  | c1  | d1  | e2   |
+| a1  | b1  | c1  | c1  | d2  | e1   |
+| a2  | b1  | c1  | c1  | d1  | e2   |
+| a2  | b1  | c1  | c1  | d2  | e1   |
+| a3  | b1  | c2  | c2  | d3  | e3   |
+| a4  | b2  | c4  | null|null | null |
+ (3)
+|   A   |   B   | R.C | S.C |  D  |  E  |
+|-------|-------|-----|-----|-----|-----|
+|  a2   |  b1   | c1  | c1  | d2  | e1  |
+|  a1   |  b1   | c1  | c1  | d2  | e1  |
+|  a2   |  b1   | c1  | c1  | d1  | e2  |
+|  a1   |  b1   | c1  | c1  | d1  | e2  |
+|  a3   |  b1   | c2  | c2  | d3  | e3  |
+| null  | null  | null| c5  | d3  | e3  |
+ (4)
+|   A   |  B  | R.C | S.C |  D  |  E  |
+|-------|-----|-----|-----|-----|-----|
+|  a1   | b1  | c1  | c1  | d1  | e2  |
+|  a1   | b1  | c1  | c1  | d2  | e1  |
+|  a2   | b1  | c1  | c1  | d1  | e2  |
+|  a2   | b1  | c1  | c1  | d2  | e1  |
+|  a3   | b1  | c2  | c2  | d3  | e3  |
+|  a4   | b2  | c4  |null |null |null |
+| null  |null |null | c5  | d3  | e3  |
+ (5)
+|  A  |  B  | R.C | S.C |  D  |  E  |
+|-----|-----|-----|-----|-----|-----|
+| a4  | b2  | c4  | c1  | d2  | e1  |
+| a3  | b1  | c2  | c1  | d2  | e1  |
+| a1  | b1  | c1  | c1  | d2  | e1  |
+| a1  | b1  | c1  | c1  | d2  | e1  |
+| a4  | b2  | c4  | c1  | d1  | e2  |
+| a3  | b1  | c2  | c1  | d1  | e2  |
+| a1  | b1  | c1  | c1  | d1  | e2  |
+| a1  | b1  | c1  | c1  | d1  | e2  |
+| a4  | b2  | c4  | c2  | d3  | e3  |
+| a3  | b1  | c2  | c2  | d3  | e3  |
+| a1  | b1  | c1  | c2  | d3  | e3  |
+| a1  | b1  | c1  | c2  | d3  | e3  |
+| a4  | b2  | c4  | c5  | d3  | e3  |
+| a3  | b1  | c2  | c5  | d3  | e3  |
+| a1  | b1  | c1  | c5  | d3  | e3  |
+| a1  | b1  | c1  | c5  | d3  | e3  |
+
+Q9.
+| sum(col2) |
+|-----------|
+|    10     |
+
+Q10.
+| a  |
+|----|
+| 1  |
+| 2  |
+| 3  |
+| 4  |
+| 5  |
+| 6  |
+| 7  |
+| 8  |
+
+Q11.
+| a | b |
+|---|---|
+| 2 | 2 |
+
+Q12.
+ (2) CREATE TABLE EMP (EMPNO integer NOT NULL, ENAME varchar(10), JOB varchar(9), MGR integer, HIREDATE DATE, SAL integer, COMM integer, PRIMARY KEY (EMPNO), DEPTNO integer, FOREIGN KEY (DEPTNO) REFERENCES DEPT(DEPTNO) ON UPDATE CASCADE);
+ (5) 오류가 나는 이유는, EMP 데이터를 집어넣으려고 할 때, FK인 DEPTNO를 50으로 넣었기 때문이다. DEPT 테이블의 DEPTNO의 50이 없기 때문에 업데이트가 되지 않는다. 따라서 DEPT 테이블에 PK인 DEPTNO에 50을 넣어줘야 한다.
+ (7) ALTER TABLE DEPT ADD COLUMN managename varchar(100);
+
+Q13.
+ (1) SELECT address, changeday FROM cust_attr WHERE custid = 1;
+ (2) select phone, changeday from cust_attr where custid = 1;
+ (3) select phone from cust_attr where custid = 1 order by changeday asc limit 1;
+ (4) select phone from cust_attr where custid = 1 and changeday = '2024-01-01' order by changeday asc limit 1;
+
+Q14. 
+ (1) select * from orders o join cart c on o.bookId = c.bookid where c.custid = 1;
+ (2) select * from cart where cart.bookid not in (select bookid from orders where custid = 1) and cart.custid = 1;
+ (3) select sum(price) from book b join cart c on b.bookid = c.bookid;
+
+Q15. 
+ (1) 
+  ① SELECT theaterName, theaterLocation FROM theater;
+  ② SELECT * FROM theater WHERE theaterLocation = '잠실';
+  ③ SELECT userName FROM users WHERE userAddress = '잠실'order by userName asc;
+  ④ SELECT theaterNum, cinemaNum, movieName FROM cinema WHERE price <= 8000;
+  ⑤ select * from users join theater on theater.theaterLocation = users.userAddress;
+ (2)
+  ① select count(*) from theater;
+  ② SELECT AVG(price) FROM cinema;
+  ③ SELECT COUNT(*) AS '고객 수' FROM reservation, users WHERE reservation.userNum = users.userNum AND date = '2014-09-01';
+ (3)
+  ① SELECT movieName FROM theater, cinema WHERE theater.theaterName = '대한' AND theater.theaterNum = cinema.theaterNum;
+  ② SELECT DISTINCT(username) FROM users u JOIN reservation r ON u.userNum = r.userNum JOIN movie.theater t ON r.theaterNum = t.theaterNum WHERE t.theaterName LIKE '대한';
+  ③ SELECT SUM(price) FROM reservation r JOIN theater t ON r.theaterNum = t.theaterNum JOIN cinema c ON c.cinemaNum = r.cinemaNum WHERE r.theaterNum = (SELECT theaterNum FROM theater WHERE theaterName = '대한') GROUP BY r.theaterNum;
+ (4)
+  ① SELECT theaterNum, COUNT(theaterNum) FROM cinema GROUP BY theaterNum;
+  ② SELECT * FROM cinema c JOIN theater t ON c.theaterNum = t.theaterNum WHERE t.theaterLocation = '잠실';
+  ③ SELECT COUNT(userNum) FROM reservation WHERE date = '2024-09-01' GROUP BY theaterNum;
+  ④ SELECT c.movieName, COUNT(*) FROM reservation r JOIN cinema c ON r.cinemaNum = c.cinemaNum WHERE date = '2024-09-01' GROUP BY r.theaterNum, r.cinemaNum ORDER BY COUNT(*) DESC LIMIT 1;
+ (5)
+  ② UPDATE cinema SET price = price + (price * 0.1);
+
+Q16. 
+ (1) 
+create table Salesperson(
+	name varchar(20) primary key,
+    age integer,
+    salary integer
+);
+create table customer (
+	name varchar(20) primary key,
+    city varchar(20),
+    industrytype varchar(20)
+);
+create table orders (
+	number integer,
+    custname varchar(20),
+    saesperson varchar(20),
+    amount integer,
+    foreign key (custname) references customer(name),
+    foreign key (saesperson) references Salesperson(name)
+);
+insert into salesperson(name, age, salary) values('Tom', '26', 10000);
+insert into salesperson(name, age, salary) values('Roy', '32', 15000);
+insert into customer(name, city, industrytype) values('Mary', 'LA', '개발자');
+insert into customer(name, city, industrytype) values('Carrie', 'LA', '요리사');
+insert into orders(number, custname, saesperson, amount) values('1', 'Mary','Tom', '1000');
+insert into orders(number, custname, saesperson, amount) values('2', 'IU','Sally', '2000');
+ (2) select name, age from salesperson group by name;
+ (3) select name from salesperson where age < 30;
+ (4) select name from customer where city like "%S";
+ (5) select count(distinct custname) from orders;
+ (6) select count(salesperson) from orders group by salesperson;
+ (7) SELECT name, age FROM salesperson s WHERE name IN (SELECT salesperson FROM Orders WHERE custname IN (SELECT name FROM customer WHERE city LIKE '%LA%'));
+ (8) SELECT S.name, S.age FROM orders O JOIN salesperson S ON O.salesperson = S.name JOIN customer C ON C.name = O.custname WHERE C.city LIKE 'LA';
+ (9) SELECT name FROM salesperson S JOIN Orders o ON S.name = o.salesperson GROUP BY salesperson HAVING COUNT(custname) >= 2;
+ (10) UPDATE salesperson SET salary = 45000 WHERE name = 'TOM';
+
+Q17.
+ (1) 
+create table Employee
+(
+	empno int auto_increment primary key,
+	name varchar(10),
+	phoneno varchar(13),
+	address varchar(20),
+	sex varchar(20),
+	position varchar(20),
+	deptno int not null
+);
+create table Department
+(
+	deptno int primary key,
+	deptname varchar(20),
+	manager varchar(20)
+);
+create table Project
+(
+	projno int primary key,
+	projname varchar(20),
+	deptno int
+);
+create table Works
+(
+	empno int not null,
+	projno int not null,
+	hours_worked int
+);
+alter table Employee add constraint foreign key(deptno) references Department(deptno) on delete cascade on update cascade;
+alter table Project add constraint foreign key(deptno) references Department(deptno) on delete cascade on update cascade;
+alter table Works add constraint foreign key(empno) references Employee(empno) on delete cascade on update cascade;
+alter table Works add constraint foreign key(projno) references Project(projno) on delete cascade on update cascade;
+insert into Department values(1, '개발1팀', '재호');
+insert into Department values(2, '개발2팀', '하윤');
+insert into Department values(3, '서비스1팀', '진우');
+insert into Department values(4, '서비스2팀', '하윤');
+insert into Project values(1, 'Admin Page Project', 1);
+insert into Project values(2, 'Client Page Project', 2);
+insert into Project values(3, 'Ad TV', 3);
+insert into Project values(4, 'Ad Web', 4);
+insert into Employee values(null, '민준', '010-1234-1230', '서울', '남자', 'IT', 1);
+insert into Employee values(null, '서준', '010-1234-1231', '부산', '남자', 'IT', 2);
+insert into Employee values(null, '예준', '010-1234-1232', '울산', '여자', 'service', 3);
+insert into Employee values(null, '도윤', '010-1234-1233', '김포', '남자', 'IT', 1);
+insert into Employee values(null, '시우', '010-1234-1234', '서울', '여자', 'service', 4);
+insert into Employee values(null, '주원', '010-1234-1235', '부산', '여자', 'IT', 2);
+insert into Employee values(null, '하준', '010-1234-1236', '김포', '남자', 'service', 4);
+insert into Employee values(null, '지호', '010-1234-1237', '울산', '여자', 'service', 3);
+insert into Employee values(null, '지후', '010-1234-1238', '서울', '남자', 'IT', 1);
+insert into Employee values(null, '준서', '010-1234-1239', '서울', '여자', 'IT', 2);
+insert into Works values(1, 1, 10);
+insert into Works values(2, 2, 2);
+insert into Works values(3, 3, 40);
+insert into Works values(4, 1, 20);
+insert into Works values(5, 4, 11);
+insert into Works values(6, 2, 5);
+insert into Works values(7, 4, 9);
+insert into Works values(8, 3, 4);
+insert into Works values(9, 1, 4);
+insert into Works values(10, 2, 12);
+ (2) select name from employee;
+ (3) select name from employee where sex = '여자';
+ (4) select manager from department;
+ (5) select name, address from employee where `position` = 'IT';
+ (6) select count(*) from Employee where deptno = (select deptno from Department where manager =' 홍길동');
+ (7) select w.empno, projno, w.hours_worked from Works w join Employee e on w.empno = e.empno order by w.empno asc, projno asc;
+ (8) select projno, projname, count(deptno) from Project p group by projno having count(deptno) >= 2;
+ (9) SELECT deptno, name FROM Employee WHERE deptno IN (SELECT D.deptno FROM Employee E JOIN Department D ON E.deptno = D.deptno GROUP BY D.deptno HAVING COUNT(*) >= 3);
+
+Q18.
+ (1) SELECT E.ENAME '사원이름', D.DNAME '사원직위' FROM EMP E, DEPT D WHERE E.DEPTNO = D.DEPTNO;
+ (2) SELECT E.ENAME '사원이름', E.SAL FROM EMP E, DEPT D WHERE E.DEPTNO = D.DEPTNO AND D.DEPTNO = 30;
+ (3) SELECT ENAME , SAL , IFNULL(SAL+COMM, SAL) '증가액', (SAL+(SAL * 0.1)) '인상된 급여' FROM EMP ORDER BY EMPNO;
+ (4) SELECT  ENAME , DEPTNO FROM EMP WHERE ENAME LIKE 'S%';
+ (5) SELECT MAX(SAL), MIN(SAL), SUM(SAL), ROUND(AVG(SAL)) FROM EMP;
+ (6) SELECT D.DNAME '업무', COUNT(*) '업무별 사원수' FROM EMP E, DEPT D WHERE E.DEPTNO = D.DEPTNO GROUP BY D.DNAME; 
+ (7) SELECT (MAX(SAL) - MIN(SAL)) '차액' FROM EMP;
+ (8) SELECT COUNT(*) '구성원 수', SUM(SAL) '합계', ROUND(AVG(SAL)) '평균' FROM EMP WHERE DEPTNO = 30 ORDER BY DEPTNO;
+ (9) SELECT DEPTNO DNO, ROUND(AVG(SAL)) AVGSAL FROM EMP GROUP BY DEPTNO ORDER BY AVGSAL DESC LIMIT 1;
+ (10) SELECT E.JOB '업무명', ROUND(AVG(SAL)) 평균급여 FROM EMP E WHERE E.JOB != 'SALESMAN' GROUP BY E.JOB HAVING SUM(E.SAL) >= 3000 ORDER BY 평균급여 DESC;
+ (11) SELECT COUNT(*) FROM EMP WHERE NOT MGR IS NULL;
+ (12) SELECT ENAME '이름', SAL '금액', COMM '커미션', (SAL + COMM) 총액 FROM EMP E WHERE COMM IS NOT NULL ORDER BY 총액 DESC;
+ (13) SELECT DEPTNO '부서번호', JOB '업무 이름', COUNT(*) '인원 수' FROM EMP GROUP BY JOB;
+ (14) SELECT D.DNAME FROM EMP E RIGHT JOIN DEPT D ON E.DEPTNO = D.DEPTNO WHERE E.EMPNO IS NULL;
+ (15) SELECT JOB '업무' , COUNT(*) '인원 수' FROM EMP GROUP BY JOB HAVING COUNT(*) >= 4;
+ (16) SELECT ENAME FROM EMP WHERE EMPNO BETWEEN 7400 AND 7600;
+ (17) SELECT E.ENAME '이름', D.DNAME FROM EMP E, DEPT D WHERE E.DEPTNO = D.DEPTNO ;
+ (18) 팀장 이름 테이블이 없다..
+ (19) SELECT E.ENAME '이름' FROM EMP E WHERE E.SAL > (SELECT SAL FROM EMP E WHERE ENAME = 'SCOTT');
+ (20) SELECT deptno FROM DEPT D, EMP E WHERE D.deptno = E.deptno and E.ename = 'SCOTT' UNION SELECT deptno FROM DEPT D, EMP E WHERE D.deptno = E.deptno and E.ename = 'DALLAS'; 
